@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button id="bt1">点击一下</button>
+<button id="bt2">点击2下</button>\
+<button id="bt3">点击3下</button>
+</body>
+<script>
+
+  // var purchaseList = [
+  //   {
+  //     "number": 1,
+  //     "startTime": "2023-03-02",
+  //     "endTime": "2023-03-03",
+  //     "detail": "123",
+  //     "end": false
+  //   },
+  //   {
+  //     "number": 2,
+  //     "startTime": "2023-03-10",
+  //     "endTime": "2023-03-11",
+  //     "detail": "345",
+  //     "end": false
+  //   }
+  // ];
+
+  $('#bt1').click(function(){
+    var purchase = {
+      "id":1
+    }
+    console.log("click1")
+    $.ajax({
+      type:"post",
+      url:"manage/purchase/select",
+      data:JSON.stringify(purchase),
+      dataType:'json',
+      contentType:'application/json',
+      success:function(result){
+        console.log(result.message);
+      }
+    });
+  });
+  $('#bt2').click(function(){
+    console.log("click2")
+    $.ajax({
+      type:"get",
+      url:"manage/purchase/selectAll",
+      dataType:'json',
+      contentType:'application/json',
+      success:function(result){
+        console.log(result.purchaseList);
+        console.log(typeof result.purchaseList)
+        var json=result.purchaseList;
+        console.log(json[0])
+      }
+    });
+
+  });
+
+  var food_day1={
+    name: "商品",
+    num: "10",
+    categoryId: "1"
+  };
+
+  var food_day2={
+    name: "商品2",
+    num: "101",
+    categoryId: "2"
+  };
+
+  var caipus=new Array();
+  caipus[0]=food_day1;
+  caipus[1]=food_day2;
+
+  $('#bt3').click(function(){
+    console.log("click1")
+    $.ajax({
+      type:"post",
+      url:"manage/outbound/insert",
+      data:JSON.stringify(caipus),
+      dataType:'json',
+      contentType:'application/json',
+      success:function(result){
+        console.log(result.message);
+      }
+    });
+  });
+</script>
+</html>

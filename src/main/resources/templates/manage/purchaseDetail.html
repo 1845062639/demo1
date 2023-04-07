@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>审核</title>
+  <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+  <link rel="stylesheet" th:href="@{/css/bootstrap-grid.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-grid.css.map}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-grid.rtl.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-grid.rtl.css.map}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-reboot.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-reboot.css.map}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-utilities.rtl.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-utilities.rtl.css.map}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css.map}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.rtl.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.rtl.css.map}">
+
+  <link rel="stylesheet" th:href="@{/css/layui.css}">
+  <link rel="stylesheet" th:href="@{/css/modules/laydate/default/laydate.css}">
+  <link rel="stylesheet" th:href="@{/css/modules/layer/default/layer.css}">
+  <link rel="stylesheet" th:href="@{/css/modules/code.css}">
+  <script th:src="@{/js/layui.js}"></script>
+</head>
+
+<body>
+<div class="p-2 bg-light border">
+  <div class="container">
+    <div class="row row-cols-auto">
+<!--     通过不通过-->
+      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        <input type="radio" class="btn-check" name="btnradio" id="false" autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for="false">不通过</label>
+
+        <input type="radio" class="btn-check" name="btnradio" id="true" autocomplete="off">
+        <label class="btn btn-outline-primary" for="true">通过</label>
+      </div>
+      <!-- 表单 -->
+      <div class="col">
+        <div class="input-group flex-nowrap">
+          <select id="select" class="form-select" aria-label="Default select example">
+            <option selected>全部品类</option>
+            <option value="1">生活类</option>
+            <option value="2">学习类</option>
+            <option value="3">工具类</option>
+          </select>
+        </div>
+      </div>
+<!--      查询-->
+      <div class="col">
+        <div class="input-group flex-nowrap">
+          <span class="input-group-text" id="addon-wrapping">名称查询</span>
+          <input id="name" type="text" class="form-control" placeholder="输入相关字" aria-label="输入相关字"
+                 aria-describedby="addon-wrapping">
+
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button id="btn" type="button" class="btn btn-primary">查询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 表格 -->
+    <div class="p-2 bg-light border">
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">商品编号</th>
+            <th scope="col">商品名字</th>
+            <th scope="col">品类</th>
+            <th scope="col">数量</th>
+
+          </tr>
+          </thead>
+          <tbody class="tbody">
+          <tr>
+            <td>123</td>
+            <td>123</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script>
+<!--    查询全部-->
+    $(function (){
+      console.log("selectDetailId")
+      $.ajax({
+        type:"get",
+        url:"selectDetailId",
+        dataType:'json',
+        contentType:'application/json',
+        success:function(result){
+          console.log(result.message)
+          if (result.state===200){
+            var str=result.objectList
+            var html="";
+            for(var i=0;i<str.length;i++){
+              html+="<tr>"+"<td>"+str[i].id+"</td>"+
+                      "<td>"+str[i].name+"</td>"+
+                      "<td>"+str[i].categoryId+"</td>"+
+                      "<td>"+str[i].num+"</td>"
+            }
+            document.querySelector(".tbody").innerHTML=html;
+          }else {
+            alert("未找到")
+          }
+
+        }
+      })
+      //查询
+      $("#btn").click(function (){
+        console.log("btn")
+        var key = {
+          categoryId : $("#select").get(0).selectedIndex,
+          name : $("#name").val()
+        }
+        console.log(key)
+        $.ajax({
+          type:"post",
+          url:"/manage/selectDetail",
+          data:JSON.stringify(key),
+          dataType:'json',
+          contentType:'application/json',
+          success:function(result){
+            console.log(result.message);
+            if (result.state===200){
+              var str=result.objectList
+              var html="";
+              for(var i=0;i<str.length;i++){
+                html+="<tr>"+"<td>"+str[i].id+"</td>"+
+                        "<td>"+str[i].name+"</td>"+
+                        "<td>"+str[i].categoryId+"</td>"+
+                        "<td>"+str[i].num+"</td>"
+              }
+              document.querySelector(".tbody").innerHTML=html;
+            }else {
+              alert("未找到")
+            }
+
+          }
+        });
+      });
+      //通过
+      $("#true").click(function (){
+        console.log("true")
+        $.ajax({
+          type:"patch",
+          url:"update/true",
+          dataType:'json',
+          contentType:'application/json',
+          success:function(result){
+            if(result.state===200){
+              alert("审核成功")
+            }
+          }
+        });
+      });
+      //未通过
+      $("#false").click(function (){
+        console.log("false")
+        $.ajax({
+          type:"patch",
+          url:"update/false",
+          dataType:'json',
+          contentType:'application/json',
+          success:function(result){
+            console.log(result.message);
+          }
+        });
+      });
+    })
+
+  </script>
+</body>
+
+</html>

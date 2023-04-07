@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成出库单</title>
+    <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap-grid.css">
+    <link rel="stylesheet" href="../css/bootstrap-grid.css.map">
+    <link rel="stylesheet" href="../css/bootstrap-grid.rtl.css">
+    <link rel="stylesheet" href="../css/bootstrap-grid.rtl.css.map">
+    <link rel="stylesheet" href="../css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="../css/bootstrap-reboot.css.map">
+    <link rel="stylesheet" href="../css/bootstrap-utilities.rtl.css">
+    <link rel="stylesheet" href="../css/bootstrap-utilities.rtl.css.map">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.css.map">
+    <link rel="stylesheet" href="../css/bootstrap.rtl.css">
+    <link rel="stylesheet" href="../css/bootstrap.rtl.css.map">
+
+    <link rel="stylesheet" href="../css/layui.css">
+    <link rel="stylesheet" href="../css/modules/laydate/default/laydate.css">
+    <link rel="stylesheet" href="../css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="../css/modules/code.css">
+    <script src="../js/layui.js"></script>
+    <style>
+        * {
+            outline: 0
+        }
+        ul,
+        li {
+            list-style: none;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            cursor: pointer;
+            text-decoration: none;
+        }
+        a:link {
+            text-decoration: none;
+        }
+        img {
+            vertical-align: middle;
+        }
+        .btn-numbox {
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .btn-numbox li {
+            float: left;
+        }
+        .btn-numbox li .number
+        .kucun {
+            display: inline-block;
+            font-size: 12px;
+            color: #808080;
+            vertical-align: sub;
+
+        }
+        .btn-numbox .count {
+            overflow: hidden;
+            margin: 0 16px 0 -20px;
+        }
+        .btn-numbox .count .num-jian,
+        .input-num,
+        .num-jia {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            font-size: 18px;
+            color: #999;
+            cursor: pointer;
+            border: 1px solid #e6e6e6;
+            margin-left: 25px;
+        }
+        .btn-numbox .count .input-num {
+            width: 58px;
+            height: 26px;
+            color: #333;
+
+        }
+        .td{
+            margin-left: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="p-2 bg-light border">
+        <div class="container">
+            <div class="row row-cols-auto">
+                <!-- 表单 -->
+                <div class="col">
+                    <div class="input-group flex-nowrap">
+                        <select id="select" class="form-select" aria-label="Default select example">
+                            <option selected>全部品类</option>
+                            <option value="1">生活类</option>
+                            <option value="2">学习类</option>
+                            <option value="3">工具类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group flex-nowrap">
+
+                        <span class="input-group-text" id="addon-wrapping">名称查询</span>
+                        <input id="name" type="text" class="form-control" placeholder="输入相关字" aria-label="输入相关字"
+                            aria-describedby="addon-wrapping">
+
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button id="btn" type="button" class="btn btn-primary">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="col">-->
+<!--                    <div>-->
+<!--&lt;!&ndash;                        把商品添加为出库单&ndash;&gt;-->
+<!--                        <a href="purchaseDetail.html"><button class="layui-btn layui-btn-normal">出库单</button></a>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+            <div class="p-2 bg-light border">
+                <!-- 表格 -->
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">商品编号</th>
+                                <th scope="col">商品名字</th>
+                                <th scope="col">品类</th>
+                                <th scope="col">备注</th>
+                                <th scope="col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody">
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+        <!--数量加减-->
+        <script>
+            //查询所有
+            $(function() {
+                let order = $("iframe", parent.document).attr('value');
+                let web = $("iframe", parent.document).attr('web');
+                console.log("order=" + order)
+                var url = "manage/selectAll"
+                var flag = undefined;
+                if (order != 0) {
+                    url += "Order/" + order;
+                } else {
+                    url += "/" + web;
+                }
+                console.log(url)
+                $.ajax({
+                    type: "get",
+                    url: "" + url,
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (result) {
+                        var str = result.objectList;
+                        var html="";
+                        for(var i=0;i<str.length;i++){
+                            html+="<tr>"+"<td>"+str[i].id+"</td>"+"<td>"+str[i].name+"</td>"+
+                                "<td>"+str[i].categoryId+"</td>"+"<td>"+str[i].num+"</td>"+
+                                "<td>"+'<ul class="btn-numbox">' +
+                                '<li><span class="number">数量</span></li>' +
+                                '<li>' +
+                                '<ul class="count">' +
+                                "<li><span  class=\"num-jian\" name="+str[i].num+">-</span></li>" +
+                                "<li><input type='text' class='input-num' id='input-num' value='0'/></li>" +
+                                '<li><span  class="num-jia">+</span></li>' +
+                                '</ul>' +
+                                '</li>' +
+                                '<li><span class="kucun">（库存:'+str[i].num+')</span></li>'+"</td>"+
+                                "<td>"+"<button class='add' name="+str[i].name+" categoryId="+str[i].categoryId+">添加</button>"+"</td>"+"</tr>"
+
+                        }
+                        document.querySelector(".tbody").innerHTML=html;
+
+                    }
+                });
+            });
+        //    查询
+            $("#btn").click(function (){
+                console.log("btn")
+                var key = {
+                    categoryId : $("#select").get(0).selectedIndex,
+                    name : $("#name").val()
+                }
+                console.log(key)
+                $.ajax({
+                    type:"post",
+                    url:"/manage/selectDetail",
+                    data:JSON.stringify(key),
+                    dataType:'json',
+                    contentType:'application/json',
+                    success:function(result){
+                        console.log(result.message);
+                        if (result.state===200){
+                            var str = result.objectList;
+                            var html="";
+                            for(var i=0;i<str.length;i++){
+
+                                html+="<tr>"+
+                                    "<td>"+str[i].id+"</td>"+
+                                    "<td>"+str[i].name+"</td>"+
+                                    "<td>"+str[i].categoryId+"</td>"+
+                                    "<td class='num'>"+str[i].num+"</td>"+
+                                    "<td>"+'<ul class="btn-numbox">' +
+                                    '<li><span class="number">数量</span></li>' +
+                                    '<li>' +
+                                    '<ul class="count">' +
+                                    '<li><span  class="num-jian" name='+str[i].num+'>-</span></li>' +
+                                    "<li><input type='text' class='input-num' id='input-num' value='0'/></li>" +
+                                    '<li><span  class="num-jia">+</span></li>' +
+                                    '</ul>' +
+                                    '</li>' +
+                                    '<li><span class="kucun">（库存:'+str[i].num+')</span></li>'+"</td>"+
+                                    "<td>"+"<button class='add' name="+str[i].name+" categoryId="+str[i].categoryId+">添加</button>"+"</td>"+"</tr>"
+                            }
+                            document.querySelector(".tbody").innerHTML=html;
+                        }else {
+                            alert("未找到")
+                        }
+
+                    }
+                });
+            });
+
+            var val;
+        //    判断库存
+        $(".tbody").on('click', 'span',function(){
+            console.log($(this).attr("class"))
+            if ($(this).attr("class")==="num-jian"){
+                var quantity = $(this).parent('li').siblings().find('#input-num');
+                val=quantity;
+                var num = parseInt($(this).attr("name"))
+                console.log(num)
+                //if判断最大值
+                if(quantity.val()<=0){
+                    quantity.val(0);
+                    alert('没货啦！')
+                }else{
+                    quantity.val(parseInt(quantity.val())- 1)
+                }
+            }else if ($(this).attr("class")==="num-jia"){
+                var quantity = $(this).parent('li').siblings().find('#input-num');
+                val=quantity;
+                var num = parseInt($(this).parent('li').siblings().find('.num-jian').attr("name"))
+                //if判断最大值
+                if(quantity.val()>=num){
+                    quantity.val(num);
+                    alert('没货啦！')
+                }else{
+                    quantity.val(parseInt(quantity.val())+ 1)
+                }
+            }
+        })
+
+        //    添加按钮
+        $(".tbody").on('click', 'button',function(){
+            var quantity = $(this).parent('td').siblings().find('#input-num').val();
+            if (parseInt(quantity)!==0){
+                console.log("num="+quantity)
+                console.log("name="+$(this).attr('name'))
+                console.log("categoryId="+$(this).attr('categoryId'))
+                var shop = {
+                    name:$(this).attr('name'),
+                    num:""+quantity,
+                    categoryId:$(this).attr('categoryId')
+                };
+                console.log("shopname="+shop);
+                $.ajax({
+                    type:"post",
+                    url:"manage/outbound/add",
+                    dataType:'json',
+                    data:JSON.stringify(shop),
+                    contentType: 'application/json',
+                    success:function(result){
+                        if (result.state===200){
+                            alert("添加成功");
+                            val.val(0);
+                        }else {
+                            alert("添加失败")
+                        }
+                    }
+                });
+            }else {
+                alert("数量为0不能添加")
+            }
+
+        });
+    </script>
+</body>
+
+</html>

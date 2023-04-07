@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改商品信息</title>
+    <script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="/css/bootstrap-grid.css.map">
+    <link rel="stylesheet" href="/css/bootstrap-grid.rtl.css">
+    <link rel="stylesheet" href="/css/bootstrap-grid.rtl.css.map">
+    <link rel="stylesheet" href="/css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="/css/bootstrap-reboot.css.map">
+    <link rel="stylesheet" href="/css/bootstrap-utilities.rtl.css">
+    <link rel="stylesheet" href="/css/bootstrap-utilities.rtl.css.map">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap.css.map">
+    <link rel="stylesheet" href="/css/bootstrap.rtl.css">
+    <link rel="stylesheet" href="/css/bootstrap.rtl.css.map">
+    <link rel="stylesheet" href="/js/bootstrap.bundle.js">
+    <link rel="stylesheet" href="/js/bootstrap.bundle.js.map">
+    <link rel="stylesheet" href="/js/bootstrap.esm.js">
+    <link rel="stylesheet" href="/js/bootstrap.esm.js.map">
+    <link rel="stylesheet" href="/js/bootstrap.js">
+    <link rel="stylesheet" href="/js/bootstrap.js.map">
+    <link rel="stylesheet" href="/js/bootstrap.bundle.js">
+    <link rel="stylesheet" href="/js/bootstrap.bundle.js.map">
+    <link rel="stylesheet" href="/js/bootstrap.esm.js">
+    <link rel="stylesheet" href="/js/bootstrap.esm.js.map">
+    <link rel="stylesheet" href="/js/bootstrap.js">
+    <link rel="stylesheet" href="/js/bootstrap.js.map">
+    <link rel="stylesheet" href="/css/layui.css">
+    <link rel="stylesheet" href="/css/modules/laydate/default/laydate.css">
+    <link rel="stylesheet" href="/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="/css/modules/code.css">
+    <script th:src="@{/js/layui.js}"></script>
+</head>
+<script>
+    $(function(){
+            //查询所有
+            let html="";
+            let order=$("iframe", parent.document).attr('value');
+            let web=$("iframe", parent.document).attr('web');
+            console.log("value="+order)
+            var url = "manage/selectAll"
+            if (order!=0){
+                url+="Order/"+order;
+            }else {
+                url+="/"+web;
+            }
+
+            console.log(url)
+            $.ajax({
+                type:"get",
+                url:""+url,
+                dataType:'json',
+                contentType:'application/json',
+                success:function(result){
+                    console.log(result.message)
+                            var str=result.objectList
+                            for(var i=0;i<str.length;i++){
+                                html+="<tr>"+"<td>"+str[i].id+"</td>"+
+                                    "<td>"+str[i].startTime+"</td>"+
+                                    "<td>"+str[i].endTime+"</td>"+
+                                    "<td>"+str[i].pc+"</td>"+
+                                    "<td>"+str[i].finished+"</td>"+
+                                    "<td class='btn'>" +
+                                    "<div id='layerDemo' style='margin-bottom: 0;'><div class='layui-btn-container'><a href='/manage/purchaseDetail'><button name="+str[i].id+" class='layui-btn layui-btn-normal'>详情</button></a> </div>" +
+                                    "</td>"
+                            }
+                            document.querySelector(".tbody").innerHTML=html;
+                }
+            });
+
+        //    查询(cv)
+        $("#select").click(function (){
+            var purchase = {
+                id:$("#id").val(),
+                startTime:$("#time").val()
+            }
+            $.ajax({
+                type:"post",
+                url:"manage/select",
+                data: JSON.stringify(purchase),
+                dataType:'json',
+                contentType:'application/json',
+                success:function(result){
+                    console.log("select"+result.message);
+                    if (result.state===200){
+                        html="";
+                        var str=result.objectList
+                        for(var i=0;i<str.length;i++){
+                            html+="<tr>"+"<td>"+str[i].id+"</td>"+
+                                "<td>"+str[i].startTime+"</td>"+
+                                "<td>"+str[i].endTime+"</td>"+
+                                "<td>"+str[i].pc+"</td>"+
+                                "<td>"+str[i].finished+"</td>"+
+                                "<td class='btn'>" +
+                                "<div id='layerDemo' style='margin-bottom: 0;'><div class='layui-btn-container'><a href='/manage/purchaseDetail'><button name="+str[i].id+" class='layui-btn layui-btn-normal'>详情</button></a> </div>" +
+                                "</td>"
+                        }
+                        document.querySelector(".tbody").innerHTML=html;
+                    }else if (result.state===233){
+                        alert("未找到")
+                    }else {
+                        document.querySelector(".tbody").innerHTML=html;
+                    }
+
+                }
+
+            });
+        });
+    })
+</script>
+<body>
+    <div class="d-grid gap-3">
+        <div class="p-2 bg-light border">
+            <div class="container">
+                <div class="row row-cols-auto">
+                    <!-- 表单 -->
+                    <div class="col">
+                        <div class="input-group flex-nowrap">
+                            <span class="input-group-text" >订单编号</span>
+                            <input id="id" type="text" class="form-control" placeholder="Commodity name"
+                                aria-label="Commodity name" aria-describedby="addon-wrapping">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="input-group flex-nowrap">
+                            <span class="input-group-text" >入库时间</span>
+                            <input id="time" type="date" class="form-control" placeholder="Warehousing time"
+                                aria-label="Warehousing time" aria-describedby="addon-wrapping">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <!-- 按钮 -->
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-primary" id="select">查询</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-2 bg-light border">
+            <!-- 表格 -->
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">编号</th>
+                            <th scope="col">开始时间</th>
+                            <th scope="col">结束时间</th>
+                            <th scope="col">执行过程</th>
+                            <th scope="col">是否完成</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+<!--按钮动态添加委托(cv)-->
+        $(".tbody").on('click', 'button',function(){
+            console.log("set detail id")
+            var id = $(this).attr('name');
+            console.log("id="+id);
+            $.ajax({
+                type:"get",
+                url:"manage/setId/"+id,
+                dataType:'json',
+                success:function(result){
+                    alert(result.message);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

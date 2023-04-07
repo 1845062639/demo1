@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shop
+    username: root
+    password: root
+  main:
+    banner-mode: off
+  thymeleaf:
+    mode: HTML
+    encoding: utf-8
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false #关闭缓存
+#配置mp的运行日志,输出到控制台
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射
+#    map-underscore-to-camel-case: true
+  global-config:
+    banner: false

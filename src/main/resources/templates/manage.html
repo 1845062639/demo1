@@ -1,0 +1,102 @@
+<!DOCTYPE>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>好又多仓库管理系统</title>
+<link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+<script src="https://code.jquery.com/jquery-3.3.0.min.js"></script>
+<script type="text/javascript" th:src="@{/js/menu.js}"></script>
+</head>
+
+<body>
+<div class="top"></div>
+<div id="header">
+    <div class="logo">好又多仓库管理系统</div>
+<!--    顶部-->
+    <div class="navigation">
+        <ul>
+            <li>欢迎您！</li>
+            <li><a href="">管理员</a></li>
+            <!-- <li><a href="">修改密码</a></li> -->
+            <!-- <li><a href="">设置</a></li> -->
+            <li><a href="login.html">返回登录</a></li>
+        </ul>
+    </div>
+</div>
+<div id="content">
+<!--    菜单-->
+    <div class="left_menu">
+        <ul id="nav_dot">
+            <li>
+                <h4 class="M2"><span></span>订单审核</h4>
+                <div class="list-item none">
+                    <a class="back">缺货单审核</a>
+                    <a class="return">退货单审核</a>
+                    <a class="purchase">采购单审核</a>
+                </div>
+            </li>
+            <li>
+                <h4 class="M2"><span></span>历史订单</h4>
+                <div class="list-item none">
+                    <a id="back" class="back">缺货单</a>
+                    <a id="return" class="return">退货单</a>
+                    <a id="purchase" class="purchase">采购单</a>
+                </div>
+            </li>
+            <li>
+                <h4 class="M2"><span></span>出库管理</h4>
+                <div class="list-item none">
+                    <a class="storehouse">查看仓库</a>
+                    <a class="shop">生成出库单</a>
+                    <a class="outbound">查看出库单</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+<!--    导航-->
+    <div class="m-right">
+        <div class="right-nav">
+            <ul>
+                <li><img th:src="@{/images/home.png}"></li>
+                <li style="margin-left:25px;">您当前的位置：</li>
+                <li><a>审核管理</a></li>
+                <li>></li>
+                <li><a>采购单审核</a></li>
+            </ul>
+        </div>
+        <iframe id="iframe" src="" class=main>
+
+        </iframe>
+
+    </div>
+</div>
+<div class="bottom"></div>
+
+<script>
+    navList(12);
+
+    //设置网址
+    $('li a').click(function(){
+
+        var web = $(this).attr("class")
+        var id = $(this).attr("id")
+        var iframe = $("iframe");
+        console.log("iframe:web="+web+" id="+id)
+        if (web=="storehouse"||web=="shop"){
+            iframe.attr('src','/'+web+'.html')
+                .attr('web',web)
+        }else {
+            iframe.attr('src','/purchase.html')
+                .attr('web',web)
+        }
+
+        if ($(this).attr("id")!==undefined){
+            iframe.attr('value',id);
+        }else {
+            iframe.attr('value',0)
+        }
+    });
+
+</script>
+</body>
+</html>
